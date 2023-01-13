@@ -1,7 +1,7 @@
 # Processador MIPS - versão simplificada
 
 
-* Processador utitlizad na disciplina de graduação.
+* Processador utitlizado em disciplina de graduação
 
 * Executa as intruções:
 
