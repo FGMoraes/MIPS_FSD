@@ -1,0 +1,131 @@
+Address    Code        Basic                     Source
+
+0x00400000  0x3c011001  lui $1,0x00001001     4    main: 	la $s0,n
+0x00400004  0x34300000  ori $16,$1,0x00000000      
+0x00400008  0x8e100000  lw $16,0x00000000($16)5    	lw $s0,0($s0)
+0x0040000c  0x3c011001  lui $1,0x00001001     6    	la $s1,v
+0x00400010  0x34310014  ori $17,$1,0x00000014      
+0x00400014  0x3c011001  lui $1,0x00001001     7    	la $s2,mediana 
+0x00400018  0x34320004  ori $18,$1,0x00000004      
+0x0040001c  0x3c011001  lui $1,0x00001001     8    	la $s3,media
+0x00400020  0x34330008  ori $19,$1,0x00000008      
+0x00400024  0x3c011001  lui $1,0x00001001     9    	la $s4,moda
+0x00400028  0x3434000c  ori $20,$1,0x0000000c      
+0x0040002c  0x3c011001  lui $1,0x00001001     10   	la $s5,vezes
+0x00400030  0x34350010  ori $21,$1,0x00000010      
+0x00400034  0x0c100052  jal 0x00400148        14   	jal bubble_sort #Roda o ordenamento bubble sort
+0x00400038  0x32080001  andi $8,$16,0x0000000116   	andi $t0, $s0, 1 #Introduz o teste no t0 do n ser par fazendo n AND 1
+0x0040003c  0x00104842  srl $9,$16,0x00000001 17   	srl $t1, $s0, 1 #Faz n/2
+0x00400040  0x00094880  sll $9,$9,0x00000002  18   	sll $t1, $t1,2 	#Transformar o acesso de n/2 para acessar dentro do vetor com sll(ex: n/2 = 6 * 4 = 24) para acessar no vetor 
+0x00400044  0x01315020  add $10,$9,$17        19   	add $t2, $t1, $s1 #Soma o valor de acesso anterior com o endereço do vetor
+0x00400048  0x8d4b0000  lw $11,0x00000000($10)20   	lw $t3, 0($t2) #Pega o elemento da posição n/2 do vetor
+0x0040004c  0x11000002  beq $8,$0,0x00000002  21   	beq $t0, $0, par #Testa se n é par
+0x00400050  0xae4b0000  sw $11,0x00000000($18)22   	sw $t3, 0($s2) #Grava o elemento da posição do vetor n/2 na mediana
+0x00400054  0x0810001c  j 0x00400070          23   	j media_cal #Se o valor for ímpar, não vou querer que ele execute a parte do par, portanto ele vai dar jump para a parte da media  
+0x00400058  0x20010004  addi $1,$0,0x00000004 25   par:	sub $t4, $t2, 4 #Pega o numero do endereço do n/2-1
+0x0040005c  0x01416022  sub $12,$10,$1             
+0x00400060  0x8d8d0000  lw $13,0x00000000($12)26   	lw $t5, 0($t4) #Pega o elemento da posição n/2-1 do vetor
+0x00400064  0x016d7020  add $14,$11,$13       27   	add $t6, $t3, $t5 #Soma os dois elementos do vetor n/2 e n/2-1 
+0x00400068  0x000e7042  srl $14,$14,0x0000000128   	srl $t6, $t6, 1 #Divide a soma/2
+0x0040006c  0xae4e0000  sw $14,0x00000000($18)29   	sw $t6, 0($s2) #Grava dentro da mediana o valor do resultado da soma/2
+0x00400070  0x01084026  xor $8,$8,$8          35   media_cal: xor $t0, $t0, $t0 #i do loop
+0x00400074  0x01294826  xor $9,$9,$9          36          	   xor $t1, $t1, $t1 #acumuladora do vetor
+0x00400078  0x00085080  sll $10,$8,0x00000002 38   loop:  	   sll $t2, $t0, 2 #Cálculo para saber a quantia que o vetor vai ser multiplicado por 4
+0x0040007c  0x01515020  add $10,$10,$17       39          	   add $t2, $t2, $s1 #Pega o inidice do vetor
+0x00400080  0x8d4b0000  lw $11,0x00000000($10)40              lw  $t3, 0($t2) #Pega o valor do indice do vetor
+0x00400084  0x012b4820  add $9,$9,$11         41              add $t1,$t1,$t3 #Soma isso com a acumuladora
+0x00400088  0x21080001  addi $8,$8,0x00000001 43          	   addi $t0,$t0,1 #Incrementa i
+0x0040008c  0x0110082a  slt $1,$8,$16         44          	   blt $t0, $s0, loop #testa se i<n  e se for, vai para o loop
+0x00400090  0x1420fff9  bne $1,$0,0xfffffff9       
+0x00400094  0x0c100041  jal 0x00400104        46   	   jal divider #Grava o valor do v1 em media
+0x00400098  0xae630000  sw $3,0x00000000($19) 48   	   sw $v1,0($s3) #coloca o resultado sem o resto na media
+0x0040009c  0x01084026  xor $8,$8,$8          54   	   xor $t0, $t0, $t0 #Zera o auxiliar do vezes
+0x004000a0  0x01294826  xor $9,$9,$9          55   	   xor $t1, $t1, $t1 #Zera o auxiliar da moda
+0x004000a4  0x014a5026  xor $10,$10,$10       56   	   xor $t2, $t2, $t2 #Zera o i
+0x004000a8  0x016b5826  xor $11,$11,$11       58   Loop_1:    xor $t3, $t3, $t3 #Zera o cont
+0x004000ac  0x01406020  add $12,$10,$0        59   	   add $t4, $t2, $0 #Atribui o valor de i em j
+0x004000b0  0x000a6880  sll $13,$10,0x0000000260   	   sll $t5, $t2, 2 #Transforma o valor de i para acessar na memória
+0x004000b4  0x01b16820  add $13,$13,$17       61   	   add $t5, $t5, $s1 #Soma o valor de acesso da memória com o valor do endereço de v
+0x004000b8  0x8dad0000  lw $13,0x00000000($13)62   	   lw  $t5, 0($t5) #Pega o valor da posição i do vetor
+0x004000bc  0x000c7080  sll $14,$12,0x0000000264   Loop_2:    sll $t6, $t4, 2 #Transforma o valor de j para acessar na memória
+0x004000c0  0x01d17020  add $14,$14,$17       65   	   add $t6, $t6, $s1 #Soma o valor de acesso da memória com o valor do endereço de v
+0x004000c4  0x8dce0000  lw $14,0x00000000($14)66   	   lw  $t6, 0($t6) #Transforma o valor de j para acessa na memória
+0x004000c8  0x15ae0001  bne $13,$14,0x0000000167   	   bne $t5, $t6, Cont_vezes #Testa se o v[i] != v[j]
+0x004000cc  0x216b0001  addi $11,$11,0x000000068   	   addi $t3, $t3, 1 #Se v[i] == v[j] então incrementa o cont
+0x004000d0  0x0168082a  slt $1,$11,$8         70   Cont_vezes:	blt $t3, $t0, Controle_loop #Testa se vezes > cont 
+0x004000d4  0x14200002  bne $1,$0,0x00000002       
+0x004000d8  0x000d4820  add $9,$0,$13         71   		add $t1, $0 $t5 #Atribui para a auxiliar da moda o valor do v[i]
+0x004000dc  0x000b4020  add $8,$0,$11         72   		add $t0, $0, $t3 #Atribui para o auxiliar do vezes o valor de cont
+0x004000e0  0x218c0001  addi $12,$12,0x000000074   Controle_loop: 	addi $t4, $t4, 1 #Incrementa j
+0x004000e4  0x0190082a  slt $1,$12,$16        75   		blt  $t4, $s0, Loop_2 #Testa se j<n
+0x004000e8  0x1420fff4  bne $1,$0,0xfffffff4       
+0x004000ec  0x214a0001  addi $10,$10,0x000000076   		addi $t2, $t2, 1 #Incrementa i
+0x004000f0  0x0150082a  slt $1,$10,$16        77   		blt  $t2, $s0, Loop_1 #Testa se i<n
+0x004000f4  0x1420ffec  bne $1,$0,0xffffffec       
+0x004000f8  0xae890000  sw $9,0x00000000($20) 79   		sw $t1, 0($s4) #Atribui o valor final da auxiliar da moda para a moda real
+0x004000fc  0xaea80000  sw $8,0x00000000($21) 80   	   	sw $t0, 0($s5) #Atribui o valor final da auxiliar do vezes para o vezes real
+0x00400100  0x08100040  j 0x00400100          84   		end: j end
+0x00400104  0x3c088000  lui $8,0x00008000     90   divider:  lui   $t0, 0x8000       # mascara para isolar bit mais significativo
+0x00400108  0x240b0020  addiu $11,$0,0x000000291             li    $t3, 32           # contador de iterações
+0x0040010c  0x00421026  xor $2,$2,$2          93             xor   $v0, $v0, $v0     # registrador P($v0)-A($v1) com  0 e o dividendo
+0x00400110  0x01201820  add $3,$9,$0          94             add   $v1, $t1, $0
+0x00400114  0x00685024  and $10,$3,$8         96   dloop:    and   $t2, $v1, $t0     # isola em t2 o bit mais significativo do registador 'A' ($v1)
+0x00400118  0x00021040  sll $2,$2,0x00000001  97             sll   $v0, $v0, 1       # desloca o registrado P-A
+0x0040011c  0x00031840  sll $3,$3,0x00000001  98             sll   $v1, $v1, 1 
+0x00400120  0x11400001  beq $10,$0,0x00000001 100            beq   $t2, $0, di1    
+0x00400124  0x34420001  ori $2,$2,0x00000001  101            ori   $v0, $v0, 1       # coloca 1 no bit menos significativo do registador 'P'($v0)
+0x00400128  0x00505022  sub $10,$2,$16        103  di1:      sub   $t2, $v0, $s0     # subtrai 'P'($v0) do divisor ($s0)
+0x0040012c  0x0140082a  slt $1,$10,$0         104            blt   $t2, $0, di2
+0x00400130  0x14200002  bne $1,$0,0x00000002       
+0x00400134  0x01401020  add $2,$10,$0         105            add   $v0, $t2, $0      # se a subtração deu positiva, 'P'($v0) recebe o valor da subtração
+0x00400138  0x34630001  ori $3,$3,0x00000001  106            ori   $v1, $v1, 1       # e 'A'($v1) recebe 1 no bit menos significativo
+0x0040013c  0x216bffff  addi $11,$11,0xfffffff108  di2:      addi  $t3, $t3, -1      # decrementa o número de iterações 
+0x00400140  0x1560fff4  bne $11,$0,0xfffffff4 109            bne   $t3, $0, dloop 
+0x00400144  0x03e00008  jr $31                111            jr    $ra          
+0x00400148  0x01084026  xor $8,$8,$8          117  bubble_sort: 	xor $t0,$t0,$t0 #Zera i
+0x0040014c  0x20010001  addi $1,$0,0x00000001 118  		sub $t1,$s0,1 #Faz n-1 
+0x00400150  0x02014822  sub $9,$16,$1              
+0x00400154  0x014a5026  xor $10,$10,$10       120  ni: 		xor $t2,$t2,$t2 #Zera j
+0x00400158  0x000a5880  sll $11,$10,0x00000002122  nj:		sll $t3,$t2,2 #Multiplica por 4 o numero de acesso no vetor
+0x0040015c  0x01715820  add $11,$11,$17       123  		add $t3,$t3,$s1 #Soma o nomero de acesso com endereço para ter o valor exato de acesso
+0x00400160  0x8d6c0000  lw $12,0x00000000($11)124  		lw $t4,0($t3) #Pega o v[j] coloca em $t5
+0x00400164  0x8d6d0004  lw $13,0x00000004($11)125  		lw $t5,4($t3) #Pega o v[j+1] coloca em $t5 
+0x00400168  0x018d082a  slt $1,$12,$13        126  		blt $t4,$t5,l1 #Se v[j] < v[j+1] vai para l1
+0x0040016c  0x14200002  bne $1,$0,0x00000002       
+0x00400170  0xad6c0004  sw $12,0x00000004($11)127  		sw $t4,4($t3) #Se for falso o if anterior grava no v[j+1] o valor de v[j]
+0x00400174  0xad6d0000  sw $13,0x00000000($11)128  		sw $t5,0($t3) #E grava o valor de v[j] no v[j+1]
+0x00400178  0x214a0001  addi $10,$10,0x0000000130  l1: 		addi $t2,$t2,1 #Incrementa o j
+0x0040017c  0x01287022  sub $14,$9,$8         131  		sub $t6,$t1,$t0 #Faz a subtração do n-i-1
+0x00400180  0x014e082a  slt $1,$10,$14        132  		blt $t2,$t6,nj #Se j < n-i-1 então vai para nj
+0x00400184  0x1420fff4  bne $1,$0,0xfffffff4       
+0x00400188  0x21080001  addi $8,$8,0x00000001 133  		addi $t0,$t0,1 #Incrementa  o i 
+0x0040018c  0x0109082a  slt $1,$8,$9          134  		blt $t0,$t1,ni #Se i < n-1 então vai para ni
+0x00400190  0x1420fff0  bne $1,$0,0xfffffff0       
+0x00400194  0x03e00008  jr $31                136  		jr $ra #Retorna para o código, com vetor ordenado
+
+0x10010000    0x00000023 0x00000000 0x00000000 0x00000000 0x00000000 0x00000061 0x0000008f 0x00000087 
+0x10010020    0x000000a3 0x00000031 0x000000a6 0x00000086 0x00000043 0x00000062 0x00000093 0x0000007d 
+0x10010040    0x0000003e 0x00000094 0x0000007b 0x000000c8 0x000000a6 0x0000002e 0x000000e0 0x0000006d 
+0x10010060    0x0000009b 0x00000078 0x0000006a 0x0000001e 0x00000042 0x00000029 0x000000a6 0x000000b0 
+0x10010080    0x00000025 0x0000008c 0x0000003c 0x00000028 0x0000001b 0x00000077 0x000000a6 0x000004d2 
+0x100100a0    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x100100c0    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x100100e0    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x10010100    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x10010120    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x10010140    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x10010160    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x10010180    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x100101a0    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x100101c0    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x100101e0    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x10010200    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x10010220    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x10010240    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x10010260    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x10010280    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x100102a0    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x100102c0    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x100102e0    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x10010300    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+0x10010320    0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 0
